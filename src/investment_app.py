@@ -9,11 +9,6 @@ from datetime import datetime
 st.set_page_config(page_title="Investment Dashboard", layout="wide")
 
 # ======================
-# Constants
-# ======================
-FIXED_TAX_RATE_PERCENT = 26.375  # 25% capital gains tax + 5.5% solidarity surcharge
-
-# ======================
 # Calculation Functions
 # ======================
 def wealth_over_time(start_amount, annual_interest, monthly_payment, years, tax_rate_percent):
@@ -75,18 +70,19 @@ Set a target amount to see how long it may take to reach your financial goal. Us
 # ======================
 with st.sidebar:
     st.header("Inputs")
-    start = st.number_input("Start (€):", min_value=0, value=60000, step=1000)
+    start = st.number_input("Start amount (€):", min_value=0, value=50000, step=1000)
     interest = st.number_input("Interest (% p.a.):", min_value=0.0, value=10.0, step=0.1, format="%.2f")
     monthly_savings = st.number_input("Monthly Savings (€):", min_value=0, value=1500, step=100)
     years = st.number_input("Projection Years:", min_value=1, value=10, step=1)
     target = st.number_input("Target (€):", min_value=0, value=500000, step=10000)
+    tax_rate_percent = st.number_input("Tax Rate (%)", min_value=0.0, value=26.375, step=0.125, format="%.3f")
     st.markdown("---")
 
 # ======================
 # Computation & Results
 # ======================
-tax_rate = FIXED_TAX_RATE_PERCENT / 100
-amounts, net_amounts = wealth_over_time(start, interest, monthly_savings, years, FIXED_TAX_RATE_PERCENT)
+tax_rate = tax_rate_percent / 100
+amounts, net_amounts = wealth_over_time(start, interest, monthly_savings, years, tax_rate_percent)
 months_list = list(range(len(amounts)))
 current_year = datetime.now().year
 years_labels = [str(current_year + m // 12) for m in months_list]
@@ -100,32 +96,31 @@ net_profit = gross_profit - taxes_paid
 years_needed_net, months_needed_net = years_to_target_after_tax(start, interest, monthly_savings, target, tax_rate)
 
 # ======================
-# Layout: Results and Chart
+# Layout: Results
 # ======================
-col1, col2 = st.columns([1, 2])
+st.subheader("Summary")
+st.markdown(f"**Final amount:** {format_euro(final_amount)}€")
+st.markdown(f"**Gross profit:** {format_euro(gross_profit)}€")
+st.markdown(f"**Net profit:** {format_euro(net_profit)}€")
+st.markdown(f"**Taxes paid:** {format_euro(taxes_paid)}€")
+st.markdown(f"**Time to target (after tax):** {years_needed_net} years, {months_needed_net} months")
 
-with col1:
-    st.subheader("Summary")
-    st.markdown(f"**Final amount:** {format_euro(final_amount)} €")
-    st.markdown(f"**Gross profit:** {format_euro(gross_profit)} €")
-    st.markdown(f"**Taxes paid (est.):** {format_euro(taxes_paid)} €")
-    st.markdown(f"**Net profit:** {format_euro(net_profit)} €")
-    st.markdown(f"**Time to target (after tax):** {years_needed_net} years, {months_needed_net} months")
-
-with col2:
-    fig = go.Figure()
-    fig.add_trace(go.Scatter(x=months_list, y=amounts, mode='lines', name='Gross Wealth'))
-    fig.add_trace(go.Scatter(x=months_list, y=net_amounts, mode='lines', name='Net Wealth (after taxes)'))
-    fig.update_layout(
-        title='Portfolio Growth Over Time',
-        xaxis=dict(title='Year', tickmode='array', tickvals=year_ticks, ticktext=year_labels),
-        yaxis=dict(title='Wealth (€)', range=[0, None]),
-        legend_title='Legend',
-        template='plotly_white',
-        margin=dict(t=60, l=20, r=20, b=40),
-        height=500,
-    )
-    st.plotly_chart(fig, use_container_width=True)
+# ======================
+# Layout: Chart
+# ======================
+fig = go.Figure()
+fig.add_trace(go.Scatter(x=months_list, y=amounts, mode='lines', name='Gross Wealth'))
+fig.add_trace(go.Scatter(x=months_list, y=net_amounts, mode='lines', name='Net Wealth (after taxes)'))
+fig.update_layout(
+    title='Portfolio Growth Over Time',
+    xaxis=dict(title='Year', tickmode='array', tickvals=year_ticks, ticktext=year_labels),
+    yaxis=dict(title='Wealth (€)', range=[0, None]),
+    legend_title='Legend',
+    template='plotly_white',
+    margin=dict(t=60, l=20, r=20, b=40),
+    height=500,
+)
+st.plotly_chart(fig, use_container_width=True)
 
 st.markdown("---")
 st.caption("Note: Taxes are fixed at 26.375%, reflecting the current Bavarian rate (25% capital gains tax plus 5.5% solidarity surcharge).")
