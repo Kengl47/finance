@@ -81,8 +81,6 @@ with st.sidebar:
     years = st.number_input("Projection Years:", min_value=1, value=10, step=1)
     target = st.number_input("Target (€):", min_value=0, value=500000, step=10000)
     st.markdown("---")
-    if st.button("Recompute"):
-        st.experimental_rerun()
 
 # ======================
 # Computation & Results
