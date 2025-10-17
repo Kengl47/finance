@@ -103,7 +103,7 @@ def compute_comparison_df(jahr: int, leistungszulage_pct: float, t_geld_aktiv: b
     return df
 
 
-def format_diff_table(df: pd.DataFrame, selected_index: str, cols=None) -> 'pd.io.formats.style.Styler':
+def format_diff_table(df: pd.DataFrame, selected_index: str, cols=None):
     if cols is None:
         cols = ["Jahresbruttogehalt", "Nettojahresgehalt", "Ø Monatsnetto"]
 
