@@ -103,7 +103,7 @@ def compute_comparison_df(jahr: int, leistungszulage_pct: float, t_geld_aktiv: b
     return df
 
 
-def format_diff_table(df: pd.DataFrame, selected_index: str, cols=None) -> pd.io.formats.style.Styler:
+def format_diff_table(df: pd.DataFrame, selected_index: str, cols=None) -> 'pd.io.formats.style.Styler':
     if cols is None:
         cols = ["Jahresbruttogehalt", "Nettojahresgehalt", "Ø Monatsnetto"]
 
@@ -141,7 +141,7 @@ def format_diff_table(df: pd.DataFrame, selected_index: str, cols=None) -> pd.io
     return styler
 
 
-def build_two_row_styler(me_res: dict, cmp_res: dict, me_lz: float, cmp_lz: float) -> pd.io.formats.style.Styler:
+def build_two_row_styler(me_res: dict, cmp_res: dict, me_lz: float, cmp_lz: float) -> 'pd.io.formats.style.Styler':
     cols = ["Jahresbruttogehalt", "Nettojahresgehalt", "Ø Monatsnetto"]
     my_index = build_index_label(me_res["Entgeltgruppe"], me_res["Stufe"], me_res["Jahr"], me_lz)
     cmp_index = build_index_label(cmp_res["Entgeltgruppe"], cmp_res["Stufe"], cmp_res["Jahr"], cmp_lz)
